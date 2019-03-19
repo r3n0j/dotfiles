@@ -1,0 +1,12 @@
+## Add this file in ~/.local/share/applications/
+## Launch sudo update-desktop-database
+[Desktop Entry]
+Encoding=UTF-8
+Name=Git terminal
+Comment=Git, repositories, repository
+Exec=gnome-terminal --tab-with-profile="Git" -e 'sh -c '\\''cd ~/repositories/REPO1; exec bash'\\' \\\n               --tab-with-profile="Git" -e 'sh -c '\\''cd ~/repositories/REPO2; exec bash'\\'\\\n               --tab-with-profile="Git" -e 'sh -c '\\''cd ~/repositories/REPO3; exec bash'\\'
+Icon=~/Images/git.png
+Categories=Application;Development
+Version=1.0
+Type=Application
+Terminal=false
