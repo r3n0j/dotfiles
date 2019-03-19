@@ -1,0 +1,67 @@
+# Git bash prompt
+# Based on https://github.com/matthewmccullough/dotfiles/blob/master/bash_gitprompt
+
+        RED="\[\033[0;31m\]"
+     YELLOW="\[\033[0;33m\]"
+      GREEN="\[\033[0;32m\]"
+       BLUE="\[\033[0;34m\]"
+  LIGHT_RED="\[\033[1;31m\]"
+LIGHT_GREEN="\[\033[1;32m\]"
+      WHITE="\[\033[1;37m\]"
+ LIGHT_GRAY="\[\033[0;37m\]"
+ COLOR_NONE="\[\e[0m\]"
+
+function parse_git_branch {
+  git rev-parse --git-dir &> /dev/null
+  git_status="$(git status 2> /dev/null)"
+  branch_pattern="On branch ([^${IFS}]*)"
+  ahead_pattern="Your branch is ahead (.*) '"
+  remote_pattern="Your branch is up to date (.*) '"
+  diverge_pattern="Your branch and (.*) have diverged"
+  untracked_pattern="Untracked files"
+  no_committed_pattern="Changes to be committed"
+  no_staged_pattern="Changes not staged"
+  
+  if [[ ${git_status}} =~ "nothing to commit" ]]; then
+    state="⚡"
+  fi
+  if [[ ${git_status}} =~ ${untracked_pattern} ]]; then
+    state="❓"
+  fi
+  if [[ ${git_status}} =~ ${no_committed_pattern} ]]; then
+    state="➕${state}"
+  fi
+  if [[ ${git_status}} =~ ${no_staged_pattern} ]]; then
+    state="❗${state}"
+  fi
+  if [[ ! ${git_status} =~ ${remote_pattern} ]]; then
+    if [[ ${git_status} =~ ${ahead_pattern} ]]; then
+      remote="🔼"
+    else
+      remote="🔽"
+    fi
+  fi
+  if [[ ${git_status} =~ ${diverge_pattern} ]]; then
+    remote="${YELLOW}↕"
+  fi
+  if [[ ${git_status} =~ ${branch_pattern} ]]; then
+    branch=${BASH_REMATCH[1]}
+    echo " (${branch})${remote}${state}"
+  fi
+}
+
+function prompt_func() {
+    previous_return_value=$?;
+
+    prompt="\[\e[32m\]\t\[\e[m\] \[\e[33m\]\u\[\e[m\] ${TITLEBAR}${BLUE}${RED}\W${BLUE}$(parse_git_branch)${BLUE}${COLOR_NONE}"
+    
+    if test $previous_return_value -eq 0
+    then
+        PS1="${prompt}> "
+    else
+        PS1="${prompt}${RED}>${COLOR_NONE} "
+    fi
+}
+
+PROMPT_COMMAND=prompt_func
+
