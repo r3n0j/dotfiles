@@ -1,0 +1,126 @@
+[alias]
+	# List all aliases
+	alias-list = "!git config -l | grep alias | cut -c 7-"
+	
+	## Display info
+	# List commits with content
+	ls = log --pretty=format:"%C(yellow)%h%C(bold red)%d\\ %Creset%s%Cblue\\ [%cn]" --decorate
+	ll = log --pretty=format:"%C(yellow)%h%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --numstat
+	# Display all branches historical tree
+	tree = log --all --decorate --oneline --graph
+	# Display current branch historical tree
+	tr = log --decorate --oneline --graph
+	
+	## Commit
+	# Show last commit
+	slc = "!git ll -1"
+	# Show last commit diff
+	slcd = diff --cached HEAD^
+	# Undo last commits
+	undo-all-commits = reset --soft HEAD^
+	# Undo last commit
+	undo-last-commit = reset --soft HEAD~1
+	# List commits unpushed
+	list-commits-unpushed = log origin/master..HEAD
+	# Commit with message
+	cmt = "!git st && echo \"## git commit -m\" && git commit -m \"$1\" && git st && :"
+	# Add all files to index and commit with message
+	cmt-all = "!git st && echo \"## git add .\" && git add . && echo \"## git commit -m\" && git commit -m \"$1\" && git st && :"
+	# Commit with message and push
+	cmt-push = "!git st && echo \"## git commit -m\" && git commit -m \"$1\" && echo \"## git push\" && git push && git st && :"
+	# Add all files to index, commit with message and push
+	cmt-all-push = "!git st && echo \"## git add .\" && git add . && echo \"## git commit -m\" && git commit -m \"$1\" && echo \"## git push\" && git push && git st && :"
+	# Commit a fix
+	fix = "!git commit --fixup"
+	# Commit a squash
+	squash = "!git commit --squash"
+	# Push force
+	puf = "!echo \"## git push origin HEAD --force-with-lease\" && git push origin HEAD --force-with-lease"
+	# Amend
+	amd = "!git st && echo \"## git commit --amend --no-edit\" && git commit --amend --no-edit && git st && :"
+	# Add all files to index and amend
+	amd-all = "!git st && echo \"## git add .\" && git add . && echo \"## git commit --amend --no-edit\" && git commit --amend --no-edit && git st && :"
+	# Cherry pick
+	cp  = "!git st && echo \"## git cherry-pick "$1"\" && git cherry-pick \"$1\" && git st && :"	
+
+	## Branches
+	# Checkout
+	co = !git checkout
+	# Checkout force
+	cof = !git checkout --force
+	# Checkout the previous branch
+	back = !git checkout -
+	# Checkout the previous branch with force
+	baf = "!echo \"## Go back to the previous branch \" && echo \"## git checkout --force - \" && !git checkout --force - && :"
+	# Rebase on updated master
+	rebase-on-master = "!echo \"## git checkout master\" && CURRENT=$(git branch-name) && git checkout master && echo \"## git pull -r\" && git pull -r && echo \"## git checkout $CURRENT\" && git checkout $CURRENT && echo \"## git rebase master\" && git rebase master"
+	# Interatif rebase with commits number
+	rebint = "!echo \"## git rebase --interactive --autosquash HEAD~\"$1\"\" && git rebase --interactive --autosquash HEAD~\"$1\" && :"
+	# Interatif rebase of unpush commits (autosquash)
+	review = "!echo \"## git rebase --interactive --autosquash origin/$(git branch-name)\" && git rebase --interactive --autosquash origin/$(git branch-name) && :"
+	# Pull rebase
+	pullr="!git st && echo \"##git pull --rebase\" && git pull --rebase && git st"
+	# Get the current branch name (not so useful in itself, but used in other aliases)
+	branch-name = "!git rev-parse --abbrev-ref HEAD"
+	# Push the current branch to the remote "origin", and set it to track the upstream branch
+	publish = "!git push -u origin $(git branch-name)"
+	# Push from current branch on an other remote branch
+	pushon = "!echo \"## git push origin $(git branch-name):\"$1\"\" && git push origin $(git branch-name):\"$1\" && :"
+	# Push from current branch on an other remote branch with force
+	pushonf = "!echo \"## git push origin $(git branch-name):\"$1\" --force\" && git push origin $(git branch-name):\"$1\" --force && :"
+	# Delete the remote version of the current branch
+	unpublish = "!git push origin :$(git branch-name)"
+	# Delete any branches that have been merged into master
+	delete-merged-branches = "!git co master && git branch --merged | grep -v '\\*' | xargs -n 1 git branch -d"
+	# Delete all local branches
+	delete-local-branches = "!git branch | grep -v "master" | xargs git branch -D"
+	
+	## Clean repo
+	# Clean
+	cln = "!echo \"## git clean -fd \" && git clean -fd && git st"
+	clnx = "!echo \"## git clean -fdx \" && git clean -fdx"
+	# Revert all changes not committed
+	override-soft="!git st && git cln && echo \"## git checkout -- . \" && git checkout -- . && echo \"## git reset HEAD --hard\" && git reset HEAD --hard && git st && :"
+	# Revert all changes not committed
+	override-all="!git st && git clnx && echo \"## git checkout -- . \" && git checkout -- . && echo \"## git reset HEAD --hard\" && git reset HEAD --hard && git st && :"
+	override-force="!git st && git clnx && echo \"## git checkout -- . \" && git checkout -- . && echo \"## git rm .gitattributes \" && git rm .gitattributes && echo \"## git add -A \" && git add -A && echo \"## git reset HEAD --hard\" && git reset HEAD --hard && git st && :"
+	# Revert all changes and commits not pushed
+	override-and-update = "!git st && echo \"## git fetch origin\" && git fetch origin && echo \"## git reset --hard origin/\"$1\"\" && git reset --hard origin/\"$1\" && echo \"## git checkout -- . \" && git checkout -- . && git st && :"
+	# Override and update the current branch
+	overup = "!git st && echo \"## git fetch origin\" && git fetch origin && echo \"## git reset --hard origin/$(git branch-name)\" && git reset --hard origin/$(git branch-name) && echo \"## git checkout -- . \" && git checkout -- . && echo \"## git clean -fd \" && git clean -fd && git st && :"
+
+	## Basic Shortcuts
+	# Status
+	st = "!echo \"## STATUS \" && git status -b -uall"
+	# State
+	state = "!git fetch --prune && git fetch --tags && clear && git branch -vv && git status"
+	# Add all
+	aa = "!echo \"## git add .\" && git add . && git st && :"
+	# Add with status
+	as = "!echo \"## git add \"$1\"\" && git add \"$1\" && git st && :"
+	# Add interactive
+	ad = add --interactive
+	# Add patch (interactive without initial command menu)
+	a = add -p
+	# Add like
+	al = "!echo \"## ADD LIKE\" && echo \"git add -- *\"$1\"* \" && git add -- *\"$1\"* && git st && :"
+	# Stash with name
+	sth = !git stash save -u
+
+	## Files
+	# Unstage any files that have been added to the staging area
+	unstage = reset HEAD
+	# Show changes that have been staged
+	df = diff --word-diff -y
+	dc = diff --cached
+	## Assume
+	# Assume a file as unchanged
+	assume = update-index --assume-unchanged
+	# Unassume a file
+	unassume = update-index --no-assume-unchanged
+	# Show assumed files
+	assumed = "!git ls-files -v | grep ^h | cut -c 3-"
+	# Unassume all the assumed files
+	unassumeall = "!git assumed | xargs git update-index --no-assume-unchanged"
+	# Assume all
+	assumeall = "!git st -s | awk {'print $2'} | xargs git assume"
