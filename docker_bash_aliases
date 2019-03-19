@@ -1,0 +1,63 @@
+## Docker bash aliases to manage a server container
+## To add in .bash_aliases
+
+# Create container
+## my_server in default without parameter
+## my_server$1 in instance$1 otherwise
+servercreate() {
+  if [ "$1" == "" ]
+    then
+    v_instance="default";
+    v_container_name="my_server";
+    v_port=8080;
+  else
+    v_instance="instance"$1;
+    v_container_name="my_server"$1;
+    v_port=8$180;
+  fi
+  docker run -d -it --dns=192.168.0.1 --name $v_container_name -p $v_port:8181 my.dockerrepo.fr:5000/my_server;
+}
+
+# Start container my_server$1
+serverstart() {
+  echo "## start server $1";
+  echo "docker start my_server$1";
+  docker start my_server$1;
+  serverlog $1;
+}
+
+# Stop container my_server$1
+serverstop() {
+  echo "## stop server $1";
+  echo "docker stop my_server$1";
+  docker stop my_server$1;
+}
+
+# Restart container my_server$1
+serverrestart() {
+  echo "## restart server $1";
+  echo "docker restart my_server$1";
+  docker restart my_server$1;
+  serverlog $1;
+}
+
+# Log container my_server$1
+serverlog() {
+  echo "## print log of server $1";
+  echo "docker logs --tail 300 -f my_server$1";
+  docker logs --tail 300 -f my_server$1;
+}
+
+# Del container my_server$1
+serverdel() {
+  echo "## del server $1";
+  echo "docker rm -f my_server$1";
+  docker rm -f my_server$1;
+}
+
+# List containers my_server
+serverlist() {
+  echo "## list servers";
+  echo "docker ps -a --filter \"name=my_server\"";
+  docker ps -a --filter "name=my_server";
+}
